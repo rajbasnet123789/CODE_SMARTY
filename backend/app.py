@@ -24,16 +24,16 @@ client = InferenceClient(
     token=HF_API_KEY
 )
 
+from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI(title="Agentic AI Code Fixer & Repo Analyzer")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # For development only, restrict in production
+    allow_origins=["*"],  # or ["https://your-frontend-domain.com"]
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["*"]
 )
+
 
 SUPPORTED_EXTENSIONS = {
     ".py": "python",
@@ -637,3 +637,4 @@ if __name__ == "__main__":
     import uvicorn
     print("Starting Agentic AI Code Fixer & Repo Analyzer server...")
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
