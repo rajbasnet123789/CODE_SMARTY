@@ -1,885 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Agentic AI Code Analyzer</title>
-<!-- Add syntax highlighting library -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/vs2015.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/c.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/python.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/java.min.js"></script>
-<style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CODE-SMARTY</title>
+  <style>
     body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f5f7fa;
-        color: #333;
-        margin: 0;
-        padding: 0;
-        line-height: 1.6;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 0;
     }
     header {
-        background-color: #4f46e5;
-        color: white;
-        padding: 1.5rem;
-        text-align: center;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      background: #4b8bbe;
+      color: white;
+      text-align: center;
+      padding: 1rem;
     }
     main {
-        padding: 2rem;
-        max-width: 1200px;
-        margin: auto;
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
     }
-    h2 {
-        color: #4f46e5;
-        margin-top: 2rem;
-        border-bottom: 2px solid #e5e7eb;
-        padding-bottom: 0.5rem;
+    section {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-    .code-container {
-        display: flex;
-        gap: 2rem;
-        margin-bottom: 2rem;
-    }
-    .code-editor {
-        flex: 1;
-    }
-    .code-results {
-        flex: 1;
-    }
-    textarea {
-        width: 100%;
-        min-height: 300px;
-        padding: 1rem;
-        margin: 0.5rem 0 1rem 0;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-        font-family: 'Courier New', monospace;
-        font-size: 14px;
-        resize: vertical;
-        background-color: #1e1e1e;
-        color: #d4d4d4;
-    }
-    input[type="text"] {
-        width: 100%;
-        padding: 0.75rem;
-        margin: 0.5rem 0 1rem 0;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-        font-family: 'Segoe UI', sans-serif;
-        font-size: 14px;
+    textarea, input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
     }
     button {
-        background-color: #4f46e5;
-        color: white;
-        border: none;
-        padding: 0.8rem 1.5rem;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: 500;
-        transition: all 0.2s ease;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      background: #4b8bbe;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 10px;
+      cursor: pointer;
+      border-radius: 6px;
     }
     button:hover {
-        background-color: #3730a3;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-    .language-badge {
-        display: inline-block;
-        background-color: #4f46e5;
-        color: white;
-        padding: 0.3rem 0.8rem;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        margin-left: 1rem;
-        vertical-align: middle;
+      background: #3a6ea5;
     }
     .result {
-        background: #fff;
-        padding: 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        margin-top: 1rem;
-        overflow: auto;
-        max-height: 600px;
-    }
-    .result-section {
-        margin-bottom: 1.5rem;
-    }
-    .result-section h3 {
-        font-size: 1.2rem;
-        color: #4f46e5;
-        margin-bottom: 0.5rem;
-    }
-    pre {
-        margin: 0;
-        background-color: #f8f9fa;
-        padding: 1rem;
-        border-radius: 4px;
-        overflow-x: auto;
-    }
-    code {
-        font-family: 'Courier New', monospace;
-    }
-    .error {
-        color: #e53e3e;
-        padding: 0.5rem;
-        background-color: #fff5f5;
-        border-left: 4px solid #e53e3e;
-        margin-bottom: 0.5rem;
-    }
-    .warning {
-        color: #dd6b20;
-        padding: 0.5rem;
-        background-color: #fffaf0;
-        border-left: 4px solid #dd6b20;
-        margin-bottom: 0.5rem;
-    }
-    .conceptual-error {
-        color: #805ad5;
-        padding: 0.5rem;
-        background-color: #faf5ff;
-        border-left: 4px solid #805ad5;
-        margin-bottom: 0.5rem;
-        font-weight: bold;
-    }
-    .suggestion {
-        color: #3182ce;
-        padding: 0.5rem;
-        background-color: #ebf8ff;
-        border-left: 4px solid #3182ce;
-        margin-bottom: 0.5rem;
-    }
-    .tabs {
-        display: flex;
-        margin-bottom: 1rem;
-    }
-    .tab {
-        padding: 0.5rem 1rem;
-        cursor: pointer;
-        background-color: #e5e7eb;
-        border: none;
-        border-radius: 4px 4px 0 0;
-        margin-right: 0.5rem;
-    }
-    .tab.active {
-        background-color: #fff;
-        border-bottom: 3px solid #4f46e5;
-        font-weight: bold;
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 6px;
+      background: #f9fafb;
+      font-size: 14px;
     }
     .loader {
-        border: 4px solid #f3f3f3;
-        border-top: 4px solid #4f46e5;
-        border-radius: 50%;
-        width: 30px;
-        height: 30px;
-        animation: spin 2s linear infinite;
-        margin: 2rem auto;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #4b8bbe;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-right: 10px;
     }
     @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
-    .terminal-container {
-        background-color: #1e1e1e;
-        color: #d4d4d4;
-        border-radius: 8px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        padding: 1rem;
-        margin-top: 2rem;
-        font-family: 'Courier New', monospace;
-        font-size: 14px;
-        min-height: 200px;
-        max-height: 400px;
-        overflow-y: auto;
+    .error {
+      color: red;
     }
-    .terminal-header {
-        color: #4f46e5;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-        border-bottom: 1px solid #333;
-        padding-bottom: 0.5rem;
-    }
-    .terminal-output {
-        white-space: pre-wrap;
-        word-wrap: break-word;
-    }
-</style>
+  </style>
 </head>
 <body>
+  <header>
+    <h1>CODE-SMARTY</h1>
+    <p>AI-powered Code & Repo Analyzer</p>
+  </header>
 
-<header>
-    <h1>Agentic AI Code Analyzer</h1>
-    <p>Real-time code analysis with conceptual error detection powered by AI</p>
-</header>
-
-<main>
-    <div class="code-container">
-        <div class="code-editor">
-            <h2>Code Editor</h2>
-            <select id="languageSelect" onchange="setLanguageTemplate()">
-                <option value="c">C</option>
-                <option value="cpp">C++</option>
-                <option value="python">Python</option>
-                <option value="java">Java</option>
-            </select>
-            <textarea id="codeInput" placeholder="Paste your code here..."></textarea>
-            <button onclick="analyzeCode()">Analyze Code</button>
-        </div>
-        
-        <div class="code-results">
-            <h2>Analysis Results</h2>
-            <div class="tabs">
-                <button class="tab active" onclick="showTab('issues')">Issues</button>
-                <button class="tab" onclick="showTab('conceptual')">Conceptual Errors</button>
-                <button class="tab" onclick="showTab('suggestions')">AI Suggestions</button>
-            </div>
-            <div id="codeResult" class="result">
-                <div class="result-section">
-                    <p>Enter your code and click "Analyze Code" to see results.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
+  <main>
+    <!-- Code Analyzer -->
     <section>
-        <h2>Analyze GitHub Repo</h2>
-        <input type="text" id="repoInput" placeholder="Enter GitHub repository URL (e.g., username/repo)"/>
-        <button onclick="analyzeRepo()">Analyze Repo</button>
-        <div id="repoResult" class="result">
-            <p>Enter a GitHub repository URL to analyze the entire codebase.</p>
-        </div>
+      <h2>Analyze Code Snippet</h2>
+      <textarea id="codeInput" rows="8" placeholder="Paste your code here..."></textarea>
+      <button onclick="analyzeCode()">Analyze Code</button>
+      <div id="codeResult" class="result"></div>
     </section>
 
+    <!-- Repo Analyzer -->
     <section>
-        <h2>Terminal Output</h2>
-        <div class="terminal-container">
-            <div class="terminal-header">Output:</div>
-            <div id="terminalOutput" class="terminal-output"></div>
-        </div>
+      <h2>Analyze GitHub Repo</h2>
+      <input type="text" id="repoInput" placeholder="Enter GitHub repo URL (https://github.com/user/repo)">
+      <button onclick="analyzeRepo()">Analyze Repo</button>
+      <div id="repoResult" class="result"></div>
     </section>
-</main>
+  </main>
 
-<script>
-// Language-specific templates
-const codeTemplates = {
-    c: `#include <stdio.h>
-#include <stdlib.h>
+  <script>
+    // ✅ Set backend API base URL
+    const API_BASE = "https://code-smarty.onrender.com";
 
-int main() {
-    // Example C code with potential conceptual errors
-    int* ptr = NULL;
-    *ptr = 42;  // NULL pointer dereference
-    
-    int* array = malloc(10 * sizeof(int));
-    // No free(array) - potential memory leak
-    
-    int x;  // Uninitialized variable
-    printf("%d\\n", x);
-    
-    return 0;
-}`,
-    cpp: `#include <iostream>
-using namespace std;
+    // -------- Code Analysis --------
+    async function analyzeCode() {
+      const code = document.getElementById("codeInput").value;
+      const resultDiv = document.getElementById("codeResult");
 
-int main() {
-    // Example C++ code with potential issues
-    int* ptr = nullptr;
-    cout << *ptr << endl;  // nullptr dereference
-    
-    int* arr = new int[10];
-    // No delete[] arr - memory leak
-    
-    return 0;
-}`,
-    python: `def calculate_average(numbers):
-    total = 0
-    for num in numbers:
-        total += num
-    return total / len(numbers)  # Potential division by zero
-
-# Uninitialized variable
-print(result)  
-
-numbers = [1, 2, 3]
-avg = calculate_average(numbers)
-print(f"Average: {avg}")`,
-    java: `public class Example {
-    public static void main(String[] args) {
-        // Example Java code
-        String str = null;
-        System.out.println(str.length());  // NPE
-        
-        int[] array = new int[5];
-        System.out.println(array[5]);  // ArrayIndexOutOfBounds
-    }
-}`
-};
-
-function setLanguageTemplate() {
-    const language = document.getElementById("languageSelect").value;
-    document.getElementById("codeInput").value = codeTemplates[language];
-    
-    // Apply syntax highlighting to the template
-    highlightCode();
-}
-
-function highlightCode() {
-    // This function would apply syntax highlighting to the textarea
-    // For a real implementation, you would use a code editor like CodeMirror or Monaco
-    // But for this demo, we're using a simple textarea
-}
-
-let activeTab = 'issues';
-
-function showTab(tabName) {
-    activeTab = tabName;
-    const tabs = document.querySelectorAll('.tab');
-    tabs.forEach(tab => {
-        tab.classList.remove('active');
-        if (tab.textContent.toLowerCase().includes(tabName)) {
-            tab.classList.add('active');
-        }
-    });
-    
-    // If we have results, update the display to show the selected tab
-    const resultDiv = document.getElementById("codeResult");
-    if (resultDiv.dataset.result) {
-        displayResults(JSON.parse(resultDiv.dataset.result));
-    }
-}
-
-async function analyzeCode() {
-    const code = document.getElementById("codeInput").value;
-    const resultDiv = document.getElementById("codeResult");
-    
-    if (!code || code.trim() === "") {
-        resultDiv.innerHTML = `<div class="error">Please enter code to analyze</div>`;
+      if (!code || code.trim() === "") {
+        resultDiv.innerHTML = `<div class="error">⚠️ Please enter code to analyze</div>`;
         return;
-    }
-    
-    // Show loading indicator
-    resultDiv.innerHTML = '<div class="loader"></div>';
-    console.log("Starting code analysis...");
+      }
 
-    try {
-        const response = await fetch("http://localhost:8000/analyze", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ code })
+      resultDiv.innerHTML = '<div class="loader"></div> Analyzing code...';
+
+      try {
+        const response = await fetch(`${API_BASE}/analyze`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code })
         });
 
-        console.log("API response status:", response.status);
-        
         if (!response.ok) {
-            let errorMsg = "Unknown error";
-            try {
-                const err = await response.json();
-                errorMsg = err.detail || response.statusText;
-            } catch (e) {
-                errorMsg = response.statusText;
-            }
-            resultDiv.innerHTML = `<div class="error">Error: ${errorMsg}</div>`;
-            console.error("API Error:", errorMsg);
-            return;
+          throw new Error("Server error: " + response.status);
         }
 
-        const result = await response.json();
-        console.log("Analysis complete for language:", result.language);
-        
-        // Store the raw result for tab switching
-        resultDiv.dataset.result = JSON.stringify(result);
-        
-        // Display the formatted results
-        displayResults(result);
-        
-        // Display runtime output in the terminal
-        const terminalOutputDiv = document.getElementById("terminalOutput");
-        if (result.runtime) {
-            terminalOutputDiv.textContent = result.runtime;
-        } else {
-            terminalOutputDiv.textContent = "No runtime output.";
-        }
+        const data = await response.json();
+        resultDiv.innerHTML = `<strong>Analysis:</strong><br><pre>${JSON.stringify(data, null, 2)}</pre>`;
+      } catch (error) {
+        resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+      }
+    }
 
-    } catch (error) {
-        console.error("Analysis error:", error);
-        const terminalOutputDiv = document.getElementById("terminalOutput");
-        terminalOutputDiv.textContent = `Error: ${error.message}\nMake sure the server is running at http://localhost:8000`;
-        resultDiv.innerHTML = `<div class="error">
-            Error: ${error.message}<br>
-            Make sure the server is running at http://localhost:8000
-        </div>`;
-    }
-}
+    // -------- Repo Analysis --------
+    async function analyzeRepo() {
+      const repo_url = document.getElementById("repoInput").value;
+      const resultDiv = document.getElementById("repoResult");
 
-function displayResults(result) {
-    const resultDiv = document.getElementById("codeResult");
-    resultDiv.innerHTML = '';
-    
-    const language = result.language || 'unknown';
-    
-    // Create language badge
-    const languageBadge = document.createElement('div');
-    languageBadge.className = 'language-badge';
-    languageBadge.textContent = language.toUpperCase();
-    
-    // Add header with language info
-    const header = document.createElement('div');
-    header.innerHTML = `<h3>Analysis Results <span class="language-badge">${language.toUpperCase()}</span></h3>`;
-    resultDiv.appendChild(header);
-    
-    // Based on active tab, show different sections
-    if (activeTab === 'issues') {
-        // Show syntax issues and runtime errors
-        const issuesSection = document.createElement('div');
-        issuesSection.className = 'result-section';
-        
-        // Add compiler/linter issues
-        if (result.issues && Object.keys(result.issues).length > 0) {
-            issuesSection.innerHTML += '<h3>Static Analysis Issues</h3>';
-            
-            for (const [tool, issues] of Object.entries(result.issues)) {
-                if (issues && issues !== 'No issues' && tool !== 'conceptual_errors') {
-                    issuesSection.innerHTML += `<h4>${tool}</h4>`;
-                    
-                    const issuesList = issues.split('\n');
-                    for (const issue of issuesList) {
-                        if (issue.trim()) {
-                            const severity = issue.toLowerCase().includes('error') ? 'error' : 'warning';
-                            issuesSection.innerHTML += `<div class="${severity}">${issue}</div>`;
-                        }
-                    }
-                }
-            }
-        } else {
-            issuesSection.innerHTML += '<p>No static analysis issues found.</p>';
-        }
-        
-        // Add runtime issues
-        if (result.runtime && result.runtime !== 'No output' && !result.runtime.includes('successfully')) {
-            issuesSection.innerHTML += '<h3>Runtime Issues</h3>';
-            issuesSection.innerHTML += `<div class="error">${result.runtime}</div>`;
-        }
-        
-        resultDiv.appendChild(issuesSection);
-    }
-    else if (activeTab === 'conceptual') {
-        // Show conceptual errors (mainly for C/C++)
-        const conceptualSection = document.createElement('div');
-        conceptualSection.className = 'result-section';
-        conceptualSection.innerHTML = '<h3>Conceptual Error Analysis</h3>';
-        
-        if (result.issues && result.issues.conceptual_errors && 
-            result.issues.conceptual_errors !== 'No conceptual issues detected') {
-            
-            const conceptualIssues = result.issues.conceptual_errors.split('\n');
-            for (const issue of conceptualIssues) {
-                if (issue.trim()) {
-                    conceptualSection.innerHTML += `<div class="conceptual-error">${issue}</div>`;
-                }
-            }
-        } else {
-            conceptualSection.innerHTML += '<p>No conceptual issues detected.</p>';
-        }
-        
-        // Add memory analysis if available
-        if (result.issues && result.issues.memory_analysis && 
-            result.issues.memory_analysis !== 'Memory analysis failed' &&
-            result.issues.memory_analysis !== 'No memory issues detected') {
-            
-            conceptualSection.innerHTML += '<h3>Memory Analysis</h3>';
-            conceptualSection.innerHTML += `<pre>${result.issues.memory_analysis}</pre>`;
-        }
-        
-        resultDiv.appendChild(conceptualSection);
-    }
-    else if (activeTab === 'suggestions') {
-        // Show AI suggestions
-        const suggestionsSection = document.createElement('div');
-        suggestionsSection.className = 'result-section';
-        suggestionsSection.innerHTML = '<h3>AI Suggestions</h3>';
-        
-        if (result.suggestions) {
-            // Extract and format the suggestions
-            const suggestions = result.suggestions.split('\n');
-            let inCodeBlock = false;
-            let codeBlockContent = '';
-            
-            for (const line of suggestions) {
-                if (line.trim().startsWith('```') || line.trim().endsWith('```')) {
-                    if (inCodeBlock) {
-                        // End of code block
-                        suggestionsSection.innerHTML += `<pre><code class="language-${language}">${codeBlockContent}</code></pre>`;
-                        codeBlockContent = '';
-                    } else {
-                        // Start of code block
-                        codeBlockContent = '';
-                    }
-                    inCodeBlock = !inCodeBlock;
-                } else if (inCodeBlock) {
-                    codeBlockContent += line + '\n';
-                } else {
-                    // Not in code block, check for suggestion patterns
-                    if (line.includes('CONCEPTUAL ISSUE:') || line.includes('SUGGESTION:') || 
-                        line.match(/^\d+\.\s+(Error|Issue|Bug):/i)) {
-                        suggestionsSection.innerHTML += `<div class="suggestion">${line}</div>`;
-                    } else if (line.trim()) {
-                        suggestionsSection.innerHTML += `<p>${line}</p>`;
-                    }
-                }
-            }
-        } else {
-            suggestionsSection.innerHTML += '<p>No AI suggestions available.</p>';
-        }
-        
-        resultDiv.appendChild(suggestionsSection);
-    }
-}
-
-async function analyzeRepo() {
-    const repo_url = document.getElementById("repoInput").value;
-    const resultDiv = document.getElementById("repoResult");
-    
-    // Validate repo URL
-    if (!repo_url || repo_url.trim() === "") {
-        resultDiv.innerHTML = `<div class="error">Please enter a GitHub repository URL</div>`;
+      if (!repo_url || !repo_url.startsWith("https://github.com/")) {
+        resultDiv.innerHTML = `<div class="error">⚠️ Enter a valid GitHub repo URL</div>`;
         return;
-    }
-    
-    // Simple GitHub URL validation
-    const githubPattern = /^[a-zA-Z0-9_-]+\/[a-zA-Z0-9_.-]+$/;
-    if (!githubPattern.test(repo_url)) {
-        resultDiv.innerHTML = `<div class="error">Please enter a valid GitHub repository URL in the format 'username/repo'</div>`;
-        return;
-    }
-    
-    // Show loading indicator
-    resultDiv.innerHTML = '<div class="loader"></div><p>Analyzing repository (this may take a few minutes)...</p>';
-    console.log("Starting GitHub repository analysis:", repo_url);
+      }
 
-    try {
-        const response = await fetch("http://localhost:8000/analyze_repo", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ repo_url })
+      resultDiv.innerHTML = '<div class="loader"></div> Analyzing repository...';
+
+      try {
+        const response = await fetch(`${API_BASE}/analyze_repo`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ repo_url })
         });
 
-        console.log("API response status:", response.status);
-        
         if (!response.ok) {
-            let errorMsg = "Unknown error";
-            try {
-                const err = await response.json();
-                errorMsg = err.detail || response.statusText;
-            } catch (e) {
-                errorMsg = response.statusText;
-            }
-            resultDiv.innerHTML = `<div class="error">
-                Error: ${errorMsg}<br>
-                Make sure the repository exists and is public.
-            </div>`;
-            console.error("API Error:", errorMsg);
-            return;
+          throw new Error("Server error: " + response.status);
         }
 
-        const result = await response.json();
-        console.log("Repository analysis complete, files analyzed:", Object.keys(result).length);
-        
-        // Store the raw result for later use
-        resultDiv.dataset.result = JSON.stringify(result);
-        
-        // Display the formatted results
-        displayRepoResults(result);
-
-    } catch (error) {
-        console.error("Repository analysis error:", error);
-        resultDiv.innerHTML = `<div class="error">
-            Error: ${error.message}<br>
-            Make sure the server is running at http://localhost:8000
-        </div>`;
+        const data = await response.json();
+        resultDiv.innerHTML = `<strong>Repo Analysis:</strong><br><pre>${JSON.stringify(data, null, 2)}</pre>`;
+      } catch (error) {
+        resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+      }
     }
-}
-
-function displayRepoResults(result) {
-    const resultDiv = document.getElementById("repoResult");
-    resultDiv.innerHTML = '';
-    
-    // Create summary
-    const fileCount = Object.keys(result).length;
-    const summary = document.createElement('div');
-    summary.innerHTML = `<h3>Repository Analysis Complete</h3>
-                         <p>Analyzed ${fileCount} files</p>`;
-    resultDiv.appendChild(summary);
-    
-    // Group files by language
-    const filesByLanguage = {};
-    
-    for (const [filePath, fileResult] of Object.entries(result)) {
-        const lang = fileResult.language || 'unknown';
-        if (!filesByLanguage[lang]) {
-            filesByLanguage[lang] = [];
-        }
-        filesByLanguage[lang].push({path: filePath, result: fileResult});
-    }
-    
-    // Create collapsible sections for each language
-    for (const [language, files] of Object.entries(filesByLanguage)) {
-        const langSection = document.createElement('div');
-        langSection.className = 'result-section';
-        langSection.innerHTML = `
-            <h3>
-                <span onclick="toggleSection('${language}')" style="cursor: pointer;">
-                    ${language.toUpperCase()} Files (${files.length})
-                    <span id="${language}-toggle">▼</span>
-                </span>
-            </h3>
-            <div id="${language}-content">
-                <p>Files with issues: ${files.filter(f => 
-                    (f.result.issues && Object.keys(f.result.issues).some(tool => 
-                        f.result.issues[tool] && f.result.issues[tool] !== 'No issues')) ||
-                    (f.result.runtime && f.result.runtime !== 'No output' && !f.result.runtime.includes('successfully'))
-                ).length}</p>
-            </div>
-        `;
-        resultDiv.appendChild(langSection);
-        
-        // Create file list for this language
-        const filesList = document.createElement('ul');
-        filesList.id = `${language}-files`;
-        document.getElementById(`${language}-content`).appendChild(filesList);
-        
-        // Sort files by number of issues (descending)
-        files.sort((a, b) => {
-            const countIssues = (file) => {
-                let count = 0;
-                if (file.result.issues) {
-                    for (const [tool, issues] of Object.entries(file.result.issues)) {
-                        if (issues && issues !== 'No issues') {
-                            count += issues.split('\n').length;
-                        }
-                    }
-                }
-                return count;
-            };
-            return countIssues(b) - countIssues(a);
-        });
-        
-        // Add top 5 files with issues for this language
-        for (let i = 0; i < Math.min(5, files.length); i++) {
-            const file = files[i];
-            const hasIssues = (file.result.issues && Object.keys(file.result.issues).some(tool => 
-                file.result.issues[tool] && file.result.issues[tool] !== 'No issues')) ||
-                (file.result.runtime && file.result.runtime !== 'No output' && !file.result.runtime.includes('successfully'));
-            
-            const fileItem = document.createElement('li');
-            fileItem.innerHTML = `
-                <div onclick="toggleFile('${file.path.replace(/'/g, "\\'")}')" style="cursor: pointer;">
-                    ${file.path} 
-                    ${hasIssues ? '<span class="error" style="padding: 0 5px;">⚠️</span>' : ''}
-                    <span id="${file.path.replace(/[^a-zA-Z0-9]/g, '-')}-toggle">▶</span>
-                </div>
-                <div id="${file.path.replace(/[^a-zA-Z0-9]/g, '-')}-content" style="display: none;"></div>
-            `;
-            filesList.appendChild(fileItem);
-        }
-        
-        // Add "Show more" if there are more than 5 files
-        if (files.length > 5) {
-            const showMoreItem = document.createElement('li');
-            showMoreItem.innerHTML = `<a href="#" onclick="showMoreFiles('${language}', ${JSON.stringify(files.slice(5).map(f => f.path))})">Show ${files.length - 5} more files...</a>`;
-            filesList.appendChild(showMoreItem);
-        }
-    }
-}
-
-function toggleSection(language) {
-    const content = document.getElementById(`${language}-content`);
-    const toggle = document.getElementById(`${language}-toggle`);
-    
-    if (content.style.display === 'none') {
-        content.style.display = 'block';
-        toggle.textContent = '▼';
-    } else {
-        content.style.display = 'none';
-        toggle.textContent = '▶';
-    }
-}
-
-function toggleFile(filePath) {
-    const safeId = filePath.replace(/[^a-zA-Z0-9]/g, '-');
-    const content = document.getElementById(`${safeId}-content`);
-    const toggle = document.getElementById(`${safeId}-toggle`);
-    
-    if (content.style.display === 'none') {
-        // Load file details
-        content.style.display = 'block';
-        toggle.textContent = '▼';
-        
-        // Find file result
-        const result = JSON.parse(document.getElementById("repoResult").dataset.result || '{}');
-        const fileResult = result[filePath];
-        
-        if (fileResult) {
-            let html = '';
-            
-            // Create tabs for different types of information
-            html += `
-                <div class="tabs" style="margin-top: 10px;">
-                    <button class="tab active" onclick="showFileTab('${safeId}', 'issues')">Issues</button>
-                    <button class="tab" onclick="showFileTab('${safeId}', 'suggestions')">AI Suggestions</button>
-                </div>
-                <div id="${safeId}-issues" class="file-tab-content" style="display: block;">`;
-            
-            // Show conceptual errors first for C/C++
-            if ((fileResult.language === 'c' || fileResult.language === 'cpp') && 
-                fileResult.issues && 
-                fileResult.issues.conceptual_errors && 
-                fileResult.issues.conceptual_errors !== 'No conceptual issues detected') {
-                html += '<h4>Conceptual Issues:</h4>';
-                const conceptualIssues = fileResult.issues.conceptual_errors.split('\n');
-                for (const issue of conceptualIssues) {
-                    if (issue.trim()) {
-                        html += `<div class="conceptual-error">${issue}</div>`;
-                    }
-                }
-            }
-            
-            // Show other issues
-            if (fileResult.issues && Object.keys(fileResult.issues).length > 0) {
-                html += '<h4>Technical Issues:</h4>';
-                for (const [tool, issues] of Object.entries(fileResult.issues)) {
-                    if (issues && issues !== 'No issues' && tool !== 'conceptual_errors') {
-                        html += `<h5>${tool}:</h5>`;
-                        const issueList = issues.split('\n');
-                        for (const issue of issueList) {
-                            if (issue.trim()) {
-                                const severity = issue.toLowerCase().includes('error') ? 'error' : 'warning';
-                                html += `<div class="${severity}">${issue}</div>`;
-                            }
-                        }
-                    }
-                }
-            }
-            
-            html += '</div>';
-            
-            // Add AI suggestions tab content
-            html += `<div id="${safeId}-suggestions" class="file-tab-content" style="display: none;">`;
-            
-            if (fileResult.suggestions) {
-                html += '<h4>AI Suggestions:</h4>';
-                
-                // Format suggestions with highlighting for key patterns
-                const language = fileResult.language || 'unknown';
-                const suggestions = fileResult.suggestions.split('\n');
-                let inCodeBlock = false;
-                let codeBlockContent = '';
-                
-                for (const line of suggestions) {
-                    if (line.trim().startsWith('```') || line.trim().endsWith('```')) {
-                        if (inCodeBlock) {
-                            // End of code block
-                            html += `<pre><code class="language-${language}">${codeBlockContent}</code></pre>`;
-                            codeBlockContent = '';
-                        } else {
-                            // Start of code block
-                            codeBlockContent = '';
-                        }
-                        inCodeBlock = !inCodeBlock;
-                    } else if (inCodeBlock) {
-                        codeBlockContent += line + '\n';
-                    } else {
-                        // Not in code block, highlight key patterns
-                        if (line.includes('ALGORITHMIC COMPLEXITY') || 
-                            line.includes('CONCEPTUAL ISSUES') || 
-                            line.includes('BEST PRACTICES')) {
-                            html += `<h5>${line}</h5>`;
-                        } else if (line.includes('CONCEPTUAL ISSUE:') || 
-                                 line.includes('SUGGESTION:') || 
-                                 line.match(/^\d+\.\s+(Error|Issue|Bug):/i) ||
-                                 line.match(/^-\s+/)) {
-                            html += `<div class="suggestion">${line}</div>`;
-                        } else if (line.trim()) {
-                            html += `<p>${line}</p>`;
-                        }
-                    }
-                }
-            } else {
-                html += '<p>No AI suggestions available for this file.</p>';
-            }
-            
-            html += '</div>';
-            
-            content.innerHTML = html || '<p>No analysis data available.</p>';
-            
-            // Apply syntax highlighting to code blocks
-            try {
-                content.querySelectorAll('pre code').forEach((block) => {
-                    hljs.highlightElement(block);
-                });
-            } catch (e) {
-                console.warn("Syntax highlighting error:", e);
-            }
-            
-        } else {
-            content.innerHTML = '<p>File details not available.</p>';
-        }
-    } else {
-        content.style.display = 'none';
-        toggle.textContent = '▶';
-    }
-}
-
-// Function to show different tabs in file details
-function showFileTab(fileId, tabName) {
-    // Hide all tab contents
-    document.querySelectorAll(`#${fileId}-issues, #${fileId}-suggestions`).forEach(el => {
-        el.style.display = 'none';
-    });
-    
-    // Show selected tab content
-    document.getElementById(`${fileId}-${tabName}`).style.display = 'block';
-    
-    // Update tab active state
-    const tabContainer = document.getElementById(`${fileId}-content`).querySelector('.tabs');
-    tabContainer.querySelectorAll('.tab').forEach(tab => {
-        tab.classList.remove('active');
-        if (tab.textContent.toLowerCase().includes(tabName)) {
-            tab.classList.add('active');
-        }
-    });
-}
-
-function showMoreFiles(language, files) {
-    const filesList = document.getElementById(`${language}-files`);
-    // Remove the "Show more" link
-    filesList.removeChild(filesList.lastChild);
-    
-    // Add the remaining files
-    for (const filePath of files) {
-        const fileItem = document.createElement('li');
-        fileItem.innerHTML = `
-            <div onclick="toggleFile('${filePath.replace(/'/g, "\\'")}')" style="cursor: pointer;">
-                ${filePath}
-                <span id="${filePath.replace(/[^a-zA-Z0-9]/g, '-')}-toggle">▶</span>
-            </div>
-            <div id="${filePath.replace(/[^a-zA-Z0-9]/g, '-')}-content" style="display: none;"></div>
-        `;
-        filesList.appendChild(fileItem);
-    }
-    return false; // Prevent default link behavior
-}
-
-// Initialize with C code template
-document.addEventListener('DOMContentLoaded', function() {
-    setLanguageTemplate();
-    // Initialize highlight.js
-    hljs.highlightAll();
-});
-</script>
-
+  </script>
 </body>
 </html>
