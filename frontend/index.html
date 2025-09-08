@@ -334,7 +334,7 @@ async function analyzeCode() {
     console.log("Starting code analysis...");
 
     try {
-        const response = await fetch("http://localhost:8000/analyze", {
+        const response = await fetch("https://code-smarty.onrender.com/analyze", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ code })
@@ -368,7 +368,7 @@ async function analyzeCode() {
         console.error("Analysis error:", error);
         resultDiv.innerHTML = `<div class="error">
             Error: ${error.message}<br>
-            Make sure the server is running at http://localhost:8000
+            Make sure the server is running at https://code-smarty.onrender.com/
         </div>`;
     }
 }
@@ -519,7 +519,7 @@ async function analyzeRepo() {
     console.log("Starting GitHub repository analysis:", repo_url);
 
     try {
-        const response = await fetch("http://localhost:8000/analyze_repo", {
+        const response = await fetch("https://code-smarty.onrender.com/analyze_repo", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ repo_url })
@@ -556,7 +556,7 @@ async function analyzeRepo() {
         console.error("Repository analysis error:", error);
         resultDiv.innerHTML = `<div class="error">
             Error: ${error.message}<br>
-            Make sure the server is running at http://localhost:8000
+            Make sure the server is running at https://code-smarty.onrender.com
         </div>`;
     }
 }
@@ -841,3 +841,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </body>
 </html>
+
