@@ -1,0 +1,88 @@
+{
+  "name": "agentic-code-analyzer",
+  "displayName": "Agentic Code Analyzer",
+  "description": "Real-time code analysis and suggestions powered by AI",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:python",
+    "onLanguage:java",
+    "onLanguage:c",
+    "onLanguage:cpp",
+    "onCommand:agentic-code-analyzer.analyzeFile",
+    "onCommand:agentic-code-analyzer.analyzeRepo"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "agentic-code-analyzer.analyzeFile",
+        "title": "Analyze Current File",
+        "category": "Agentic Code Analyzer"
+      },
+      {
+        "command": "agentic-code-analyzer.analyzeRepo",
+        "title": "Analyze GitHub Repository",
+        "category": "Agentic Code Analyzer"
+      }
+    ],
+    "configuration": {
+      "title": "Agentic Code Analyzer",
+      "properties": {
+        "agentic-code-analyzer.apiUrl": {
+          "type": "string",
+          "default": "http://localhost:8000",
+          "description": "URL of the Agentic Code Analyzer API"
+        },
+        "agentic-code-analyzer.enableRealTimeAnalysis": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable real-time code analysis as you type"
+        },
+        "agentic-code-analyzer.analysisDelay": {
+          "type": "number",
+          "default": 1000,
+          "description": "Delay in milliseconds before triggering analysis after typing"
+        }
+      }
+    },
+    "menus": {
+      "editor/context": [
+        {
+          "command": "agentic-code-analyzer.analyzeFile",
+          "group": "Agentic Code Analyzer"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "agentic-code-analyzer.analyzeRepo",
+          "group": "Agentic Code Analyzer"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "node ./test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.60.0",
+    "@types/glob": "^7.1.3",
+    "@types/node": "16.x",
+    "eslint": "^8.1.0",
+    "glob": "^7.1.7",
+    "typescript": "^4.4.4",
+    "vscode-test": "^1.6.1"
+  },
+  "dependencies": {
+    "axios": "^0.24.0"
+  }
+}
