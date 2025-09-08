@@ -1,0 +1,16 @@
+fastapi 
+uvicorn 
+huggingface_hub 
+langchain 
+docker 
+gitpython 
+firebase-admin 
+flake8 
+mypy
+python-dotenv
+# C/C++ static analysis tools
+# Note: These will need to be installed via system package manager (apt, brew, etc.)
+# rather than pip, but they're listed here for documentation
+# cppcheck>=2.7
+# valgrind>=3.19
+# clang>=12.0
